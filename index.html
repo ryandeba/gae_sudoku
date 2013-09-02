@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+        <script type="text/javascript">
+            $(function(){
+
+                var Cell = Backbone.Model.extend({
+                    defaults: {
+                        value: "."
+                    }
+                });
+
+                var CellView = Backbone.View.extend({
+                    tagName: "div",
+
+                    template:  _.template($("#cellTemplate").html()),
+
+                    attributes: {
+                        "class" : "board-cell"
+                    },
+
+                    initialize: function(){
+                        this.listenTo(this.model, "change", this.render);
+                    },
+
+                    render: function(){
+                        this.$el.html(this.template(this.model.toJSON()));
+                        return this;
+                    }
+                });
+
+                var Cells = Backbone.Collection.extend({
+                    model: Cell,
+
+                    initialize: function(){
+                        var self = this;
+                        for (var i = 0; i < 81; i++){
+                            self.add({});
+                        }
+                    }
+                });
+
+                var App = Backbone.View.extend({
+                    initialize: function(){
+                        var self = this;
+
+                        self.cells = new Cells();
+                    },
+
+                    render: function(){
+                        this.renderCells();
+                        return this;
+                    },
+
+                    renderCells: function(){
+                        var self = this;
+                        self.$el.find("#board").html("");
+                        self.cells.each(function(cell){
+                            var cellView = new CellView({model: cell});
+                            self.$el.append(cellView.render().$el);
+                        });
+                    }
+                });
+
+                new App({
+                    el: "#sudoku"
+                }).render();
+            });
+        </script>
+    </head>
+    <body id="sudoku">
+        <script type="text/template" id="cellTemplate">
+            <%= value %>
+        </script>
+
+        <div id="board"></div>
+    </body>
+</html>

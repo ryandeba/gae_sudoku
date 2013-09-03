@@ -165,7 +165,7 @@
                         var board = "";
 
                         self.cells.each(function(cell){
-                            board += cell.get("value");
+                            board += cell.get("value").length == 1 ? cell.get("value") : "0";
                         });
                         $.ajax({
                             url: "/solveBoard?board=" + board,

@@ -10,7 +10,7 @@
 
                 var Cell = Backbone.Model.extend({
                     defaults: {
-                        value: "_",
+                        value: "",
                         isSelected: false
                     }
                 });
@@ -175,6 +175,9 @@
 
                     receiveSolutions: function(data){
                         var self = this;
+                        if (data[0].length == 0){
+                            self.$el.find("#message").html("No possible solution");
+                        }
                         for (var i = 0; i < data[0].length; i++){
                             self.cells.at(i).set("value", data[0].charAt(i));
                         }
@@ -220,16 +223,24 @@
         </script>
         <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
         <style>
+            * {
+                box-sizing: border-box;
+            }
+
             ::selection {
                 color: black;
             }
+
             body {
                 background-color: #B8AE9C;
                 font-family: 'Droid Sans', sans-serif;
+                margin: 10px;
             }
 
             .sudoku-row {
-                margin-bottom: 10px;
+                clear: both;
+                padding-bottom: 10px;
+                overflow: auto;
                 width: 100%;
             }
 
@@ -237,8 +248,9 @@
                 background-color: #FFFFFF;
                 box-shadow: 1px 1px 4px #595241;
                 cursor: pointer;
-                display: inline-block;
+                display: block;
                 font-size: 50px;
+                float: left;
                 height: 60px;
                 overflow: hidden;
                 text-align: center;
@@ -269,5 +281,6 @@
             <div id="controls" style="float: left;"></div>
             <div class="sudoku-cell js-solve-button" style="float: left; margin-left: 10px; width: 270px;">Solve</div>
         </div>
+        <span id="message" style="clear:both; float:left;"></span>
     </body>
 </html>

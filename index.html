@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <title>Sudoku Solver</title>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
@@ -81,7 +82,8 @@
                 var App = Backbone.View.extend({
 
                     events: {
-                        "keypress": "keypressListener"
+                        "keypress": "keypressListener",
+                        "click .js-solve-button": "solveBoard"
                     },
 
                     initialize: function(){
@@ -95,6 +97,7 @@
                         for (var i = 1; i < 10; i++){
                             controlsJSON.push({'value': i.toString()});
                         }
+                        controlsJSON.push({'value': 'C'});
                         self.controls = new Cells(controlsJSON);
                         self.listenTo(self.controls, "click", self.controlClicked);
 
@@ -134,6 +137,8 @@
                         var self = this;
                         if ("123456789".indexOf(control.get("value")) > -1){
                             self.setSelectedCellToValue(control.get("value"));
+                        } else {
+                            self.setSelectedCellToValue("");
                         }
                     },
 
@@ -152,6 +157,27 @@
 
                     cellClicked: function(cell){
                         cell.set("isSelected", true);
+                    },
+
+                    solveBoard: function(){
+                        var self = this;
+
+                        var board = "";
+
+                        self.cells.each(function(cell){
+                            board += cell.get("value");
+                        });
+                        $.ajax({
+                            url: "/solveBoard?board=" + board,
+                            success: function(data){ self.receiveSolutions(data); }
+                        });
+                    },
+
+                    receiveSolutions: function(data){
+                        var self = this;
+                        for (var i = 0; i < data[0].length; i++){
+                            self.cells.at(i).set("value", data[0].charAt(i));
+                        }
                     },
 
                     render: function(){
@@ -177,10 +203,12 @@
                         var self = this;
                         var $controls = self.$el.find("#controls");
                         $controls.html("");
-                        $controls.append("<div class='sudoku-row'></div>");
-                        self.controls.each(function(cell){
+                        self.controls.each(function(cell, iterator){
+                            if (iterator % 5 == 0){
+                                $controls.append("<div class='sudoku-row'></div>");
+                            }
                             var cellView = new CellView({model: cell});
-                            $controls.find(".sudoku-row").append(cellView.render().$el);
+                            $controls.find(".sudoku-row").last().append(cellView.render().$el);
                         });
                     }
                 });
@@ -237,6 +265,9 @@
 
         <div id="board"></div>
         <hr>
-        <div id="controls"></div>
+        <div>
+            <div id="controls" style="float: left;"></div>
+            <div class="sudoku-cell js-solve-button" style="float: left; margin-left: 10px; width: 270px;">Solve</div>
+        </div>
     </body>
 </html>

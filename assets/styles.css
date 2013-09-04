@@ -1,0 +1,45 @@
+* {
+    box-sizing: border-box;
+}
+
+::selection {
+    color: black;
+}
+
+body {
+    background-color: #B8AE9C;
+    font-family: 'Droid Sans', sans-serif;
+    margin: 10px;
+}
+
+.sudoku-row {
+    clear: both;
+    padding-bottom: 10px;
+    overflow: auto;
+    width: 100%;
+}
+
+.sudoku-cell {
+    background-color: #FFFFFF;
+    box-shadow: 1px 1px 4px #595241;
+    cursor: pointer;
+    display: block;
+    font-size: 50px;
+    float: left;
+    height: 60px;
+    overflow: hidden;
+    text-align: center;
+    width: 60px;
+}
+
+.sudoku-cell.is-selected {
+    background-color: yellow;
+}
+
+.sudoku-cell + .sudoku-cell {
+    margin-left: 10px;
+}
+
+.sudoku-group-cell-2 {
+    background-color: #ACCFCC;
+}

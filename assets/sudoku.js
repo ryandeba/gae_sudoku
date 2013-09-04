@@ -159,6 +159,9 @@ $(function(){
             self.cells.each(function(cell){
                 board += cell.get("value").length == 1 ? cell.get("value") : "0";
             });
+
+            self.$el.find("#message").html("Solving...");
+
             $.ajax({
                 url: "/solveBoard?board=" + board,
                 success: function(data){ self.receiveSolutions(data); }
@@ -167,6 +170,7 @@ $(function(){
 
         receiveSolutions: function(data){
             var self = this;
+            self.$el.find("#message").html("");
             if (data[0].length == 0){
                 self.$el.find("#message").html("No possible solution");
             }

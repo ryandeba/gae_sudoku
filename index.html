@@ -3,58 +3,12 @@
     <head>
         <title>Sudoku Solver</title>
         <link rel="icon" type="image/ico" href="/assets/favicon.ico"/>
-        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+        <script src="/assets/jquery.js"></script>
+        <script src="/assets/underscore.js"></script>
+        <script src="/assets/backbone.js"></script>
         <script src="/assets/sudoku.js"></script>
         <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-        <style>
-            * {
-                box-sizing: border-box;
-            }
-
-            ::selection {
-                color: black;
-            }
-
-            body {
-                background-color: #B8AE9C;
-                font-family: 'Droid Sans', sans-serif;
-                margin: 10px;
-            }
-
-            .sudoku-row {
-                clear: both;
-                padding-bottom: 10px;
-                overflow: auto;
-                width: 100%;
-            }
-
-            .sudoku-cell {
-                background-color: #FFFFFF;
-                box-shadow: 1px 1px 4px #595241;
-                cursor: pointer;
-                display: block;
-                font-size: 50px;
-                float: left;
-                height: 60px;
-                overflow: hidden;
-                text-align: center;
-                width: 60px;
-            }
-
-            .sudoku-cell.is-selected {
-                background-color: yellow;
-            }
-
-            .sudoku-cell + .sudoku-cell {
-                margin-left: 10px;
-            }
-
-            .sudoku-group-cell-2 {
-                background-color: #ACCFCC;
-            }
-        </style>
+        <link href="/assets/styles.css" rel="stylesheet" type="text/css">
     </head>
     <body id="sudoku">
         <script type="text/template" id="cellTemplate">

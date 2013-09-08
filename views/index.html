@@ -3,12 +3,13 @@
     <head>
         <title>Sudoku Solver</title>
         <link rel="icon" type="image/ico" href="/assets/favicon.ico"/>
+        <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+        <link href="/assets/styles.css" rel="stylesheet/less" type="text/css">
         <script src="/assets/jquery.js"></script>
         <script src="/assets/underscore.js"></script>
         <script src="/assets/backbone.js"></script>
         <script src="/assets/sudoku.js"></script>
-        <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-        <link href="/assets/styles.css" rel="stylesheet" type="text/css">
+        <script src="/assets/less.js"></script>
     </head>
     <body id="sudoku">
         <script type="text/template" id="cellTemplate">
@@ -19,7 +20,7 @@
         <hr>
         <div>
             <div id="controls" style="float: left;"></div>
-            <div class="sudoku-cell js-solve-button" style="float: left; margin-left: 10px; width: 270px;">Solve</div>
+            <div class="sudoku-cell sudoku-cell-3 js-solve-button">Solve</div>
         </div>
         <span id="message" style="clear:both; float:left;"></span>
     </body>

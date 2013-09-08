@@ -6,15 +6,17 @@
     color: black;
 }
 
+@sudoku-cell-size: 60px;
+
 body {
     background-color: #B8AE9C;
     font-family: 'Droid Sans', sans-serif;
-    margin: 10px;
+    margin: 5px;
 }
 
 .sudoku-row {
     clear: both;
-    padding-bottom: 10px;
+    padding-bottom: @sudoku-cell-size / 10;
     overflow: auto;
     width: 100%;
 }
@@ -24,12 +26,18 @@ body {
     box-shadow: 1px 1px 4px #595241;
     cursor: pointer;
     display: block;
-    font-size: 50px;
+    font-size: @sudoku-cell-size * (5 / 6);
     float: left;
-    height: 60px;
+    height: @sudoku-cell-size;
     overflow: hidden;
     text-align: center;
-    width: 60px;
+    width: @sudoku-cell-size;
+}
+
+.sudoku-cell-3 {
+    height: @sudoku-cell-size;
+    margin-left: @sudoku-cell-size / 10;
+    width: @sudoku-cell-size * 4 + @sudoku-cell-size / 4;
 }
 
 .sudoku-cell.is-selected {
@@ -37,7 +45,7 @@ body {
 }
 
 .sudoku-cell + .sudoku-cell {
-    margin-left: 10px;
+    margin-left: @sudoku-cell-size / 10;
 }
 
 .sudoku-group-cell-2 {

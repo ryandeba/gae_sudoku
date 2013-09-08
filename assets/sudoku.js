@@ -215,5 +215,20 @@ $(function(){
     new App({
         el: "#sudoku"
     }).render();
+
+
+    var resizeElements = function(){
+        var sudokuCellSize = ($(window).width() - 10) / 10;
+        if ($(window).height() < $(window).width() * 1.25) {
+            sudokuCellSize = ($(window).height() - 10) / 12.5;
+        }
+        less.modifyVars({
+            '@sudoku-cell-size' : sudokuCellSize + 'px'
+        });
+    };
+    resizeElements();
+    $(window).on("resize", function(){
+        resizeElements();
+    });
 });
 

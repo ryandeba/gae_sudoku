@@ -6,7 +6,7 @@
     color: black;
 }
 
-@sudoku-cell-size: 60px;
+@sudoku-cell-size: 1px;
 
 body {
     background-color: #B8AE9C;
@@ -45,7 +45,7 @@ body {
 }
 
 .sudoku-cell + .sudoku-cell {
-    margin-left: @sudoku-cell-size / 10;
+    margin-left: 5px;
 }
 
 .sudoku-group-cell-2 {

@@ -22,10 +22,18 @@ $(function(){
 
         initialize: function(){
             this.listenTo(this.model, "change", this.render);
+            this.listenTo(this.model, "change:value", this.valueChanged);
         },
 
         clickListener: function(){
             this.model.trigger("click", this.model);
+        },
+
+        valueChanged: function(){
+            var self = this;
+            setTimeout(function(){
+                self.flippyFlippy();
+            }, 1);
         },
 
         render: function(){
@@ -44,6 +52,11 @@ $(function(){
             }
 
             return this;
+        },
+
+        flippyFlippy: function(){
+            var self = this;
+            self.$el.addClass("animated flipInY");
         }
     });
 
@@ -218,7 +231,7 @@ $(function(){
 
 
     var resizeElements = function(){
-        var sudokuCellSize = ($(window).width() - 10) / 10;
+        var sudokuCellSize = ($(window).width() - 10 - (5 * 8)) / 9;
         if ($(window).height() < $(window).width() * 1.25) {
             sudokuCellSize = ($(window).height() - 10) / 12.5;
         }

@@ -215,7 +215,11 @@ $(function(){
                 self.$el.find("#message").html("No possible solution");
             }
             for (var i = 0; i < data[0].length; i++){
-                self.cells.at(i).set("value", data[0].charAt(i));
+                (function(x){
+                    setTimeout(function(){
+                        self.cells.at(x).set("value", data[0].charAt(x));
+                    }, x * 30);
+                }(i));
             }
         },
 

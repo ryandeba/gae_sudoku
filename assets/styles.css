@@ -34,10 +34,10 @@ body {
     width: @sudoku-cell-size;
 }
 
-.sudoku-cell-3 {
+.sudoku-cell-4 {
     height: @sudoku-cell-size;
     margin-left: @sudoku-cell-size / 10;
-    width: @sudoku-cell-size * 4 + @sudoku-cell-size / 4;
+    width: @sudoku-cell-size * 4 + 15px;
 }
 
 .sudoku-cell.is-selected {

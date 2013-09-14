@@ -169,13 +169,14 @@ $(function(){
 
         controlClicked: function(control){
             var self = this;
-            if ("123456789".indexOf(control.get("value")) > -1){
+            if ("123456789C".indexOf(control.get("value")) > -1){
                 self.setSelectedCellToValue(control.get("value"));
             }
         },
 
         setSelectedCellToValue: function(value){
             var self = this;
+            value = "123456789".indexOf(value) > -1 ? value : "";
             self.cells.findWhere({"isSelected" : true}).set("value", value);
             self.selectNextCell();
         },

@@ -1,3 +1,12 @@
+import random
+
+class SudokuMaker:
+
+     def getNewPuzzle(self):
+        sudokuSolver = SudokuSolver()
+        sudokuSolver.solveBoard(board = Board(), numberOfSolutionsToFind = 1, solveInRandomOrder = True)
+        return sudokuSolver.solutions[0]
+
 class SudokuSolver:
 
     def __init__(self, board = None):
@@ -7,7 +16,7 @@ class SudokuSolver:
     def __str__(self):
         return ''
 
-    def solveBoard(self, board, numberOfSolutionsToFind):
+    def solveBoard(self, board, numberOfSolutionsToFind, solveInRandomOrder = False):
         thisBoard = Board(board.getBoard())
         if thisBoard.isSolveable() == False:
             return
@@ -15,9 +24,11 @@ class SudokuSolver:
         if (nextUnsolvedIndexAndPossibleSolutions['index']) >= 0:
             unsolvedIndex = nextUnsolvedIndexAndPossibleSolutions['index']
             possibleValues = nextUnsolvedIndexAndPossibleSolutions['possibleValues']
+            if solveInRandomOrder:
+                random.shuffle(possibleValues)
             for i in possibleValues:
                 thisBoard.setIndexToValue(unsolvedIndex, str(i))
-                self.solveBoard(thisBoard, numberOfSolutionsToFind)
+                self.solveBoard(thisBoard, numberOfSolutionsToFind, solveInRandomOrder)
                 if len(self.solutions) >= numberOfSolutionsToFind:
                     return
         if thisBoard.isSolved():
@@ -31,12 +42,44 @@ class SudokuSolver:
         self.findUpToNSolutions(1)
         if len(self.solutions) > 0:
             return self.solutions[0]
-        return Board()
+        return ''
 
 class Board:
 
     VALID_VALUES = list('123456789')
-    SQUARES = [[0,1,2,9,10,11,18,19,20],[3,4,5,12,13,14,21,22,23],[6,7,8,15,16,17,24,25,26],[27,28,29,36,37,38,45,46,47],[30,31,32,39,40,41,48,49,50],[33,34,35,42,43,44,51,52,53],[54,55,56,63,64,65,72,73,74],[57,58,59,66,67,68,75,76,77],[60,61,62,69,70,71,78,79,80]]
+    ROWS = [
+        [0, 1, 2, 3, 4, 5, 6, 7, 8],
+        [9, 10, 11, 12, 13, 14, 15, 16, 17],
+        [18, 19, 20, 21, 22, 23, 24, 25, 26],
+        [27, 28, 29, 30, 31, 32, 33, 34, 35],
+        [36, 37, 38, 39, 40, 41, 42, 43, 44],
+        [45, 46, 47, 48, 49, 50, 51, 52, 53],
+        [54, 55, 56, 57, 58, 59, 60, 61, 62],
+        [63, 64, 65, 66, 67, 68, 69, 70, 71],
+        [72, 73, 74, 75, 76, 77, 78, 79, 80]
+    ]
+    COLUMNS = [
+        [0, 9, 18, 27, 36, 45, 54, 63, 72],
+        [1, 10, 19, 28, 37, 46, 55, 64, 73],
+        [2, 11, 20, 29, 38, 47, 56, 65, 74],
+        [3, 12, 21, 30, 39, 48, 57, 66, 75],
+        [4, 13, 22, 31, 40, 49, 58, 67, 76],
+        [5, 14, 23, 32, 41, 50, 59, 68, 77],
+        [6, 15, 24, 33, 42, 51, 60, 69, 78],
+        [7, 16, 25, 34, 43, 52, 61, 70, 79],
+        [8, 17, 26, 35, 44, 53, 62, 71, 80]
+    ]
+    SQUARES = [
+        [0, 1, 2, 9, 10, 11, 18, 19, 20],
+        [3, 4, 5, 12, 13, 14, 21, 22, 23],
+        [6, 7, 8, 15, 16, 17, 24, 25, 26],
+        [27, 28, 29, 36, 37, 38, 45, 46, 47],
+        [30, 31, 32, 39, 40, 41, 48, 49, 50],
+        [33, 34, 35, 42, 43, 44, 51, 52, 53],
+        [54, 55, 56, 63, 64, 65, 72, 73, 74],
+        [57, 58, 59, 66, 67, 68, 75, 76, 77],
+        [60, 61, 62, 69, 70, 71, 78, 79, 80]
+    ]
 
     def __init__(self, board = None):
         self.loadBoard(board)
@@ -87,6 +130,7 @@ class Board:
         return self.areRowsSolved() and self.areColumnsSolved() and self.areSquaresSolved()
 
     def isSolveable(self):
+        #TODO: also make sure that all unsolved indexes have at least 1 possible value
         return self.areRowsValid() and self.areColumnsValid() and self.areSquaresValid()
 
     def getNextUnsolvedIndexAndPossibleValues(self):
@@ -130,60 +174,59 @@ class Board:
         return possibleValues
 
     def areRowsValid(self):
-        for i in [0,9,18,27,36,45,54,63,72]:
-            rowValues = []
-            for j in range(9):
-                if self.getValueAtIndex(i + j) != '0':
-                    rowValues.append(self.getValueAtIndex(i + j))
-            if len(rowValues) != len(set(rowValues)):
+        for row in self.ROWS:
+            if self.areIndexesValid(row) == False:
                 return False
         return True
 
     def areColumnsValid(self):
-        for i in range(9):
-            columnValues = []
-            for j in [0,9,18,27,36,45,54,63,72]:
-                if self.getValueAtIndex(i + j) != '0':
-                    columnValues.append(self.getValueAtIndex(i + j))
-            if '0' in columnValues or (len(columnValues) != len(set(columnValues))):
+        for column in self.COLUMNS:
+            if self.areIndexesValid(column) == False:
                 return False
         return True
 
     def areSquaresValid(self):
-        for i in [0,3,6,27,30,33,54,57,60]:
-            squareValues = []
-            for j in [0,1,2,9,10,11,18,19,20]:
-                if self.getValueAtIndex(i + j) != '0':
-                    squareValues.append(self.getValueAtIndex(i + j))
-            if '0' in squareValues or (len(squareValues) != len(set(squareValues))):
+        for square in self.SQUARES:
+            if self.areIndexesValid(square) == False:
                 return False
         return True
 
+    def areIndexesValid(self, indexes):
+        values = []
+        for index in indexes:
+            if self.getValueAtIndex(index) != '0':
+                values.append(self.getValueAtIndex(index))
+        if len(values) != len(set(values)):
+            return False
+        return True
+
     def areRowsSolved(self):
-        for i in [0,9,18,27,36,45,54,63,72]:
-            rowValues = []
-            for j in range(9):
-                rowValues.append(self.getValueAtIndex(i + j))
-            if '0' in rowValues or (len(rowValues) != len(set(rowValues))):
+        for rowIndexes in self.ROWS:
+            if self.areIndexesSolved(rowIndexes) == False:
                 return False
         return True
 
     def areColumnsSolved(self):
-        for i in range(9):
-            columnValues = []
-            for j in [0,9,18,27,36,45,54,63,72]:
-                columnValues.append(self.getValueAtIndex(i + j))
-            if '0' in columnValues or (len(columnValues) != len(set(columnValues))):
+        for columnIndexes in self.COLUMNS:
+            if self.areIndexesSolved(columnIndexes) == False:
                 return False
         return True
 
     def areSquaresSolved(self):
-        for i in [0,3,6,27,30,33,54,57,60]:
-            squareValues = []
-            for j in [0,1,2,9,10,11,18,19,20]:
-                squareValues.append(self.getValueAtIndex(i + j))
-            if '0' in squareValues or (len(squareValues) != len(set(squareValues))):
+        for squareIndexes in self.SQUARES:
+            if self.areIndexesSolved(squareIndexes) == False:
                 return False
+        return True
+
+    def areIndexesSolved(self, indexes):
+        values = []
+        for index in indexes:
+            if self.getValueAtIndex(index) == '0':
+                return False
+            else:
+                values.append(self.getValueAtIndex(index))
+        if len(values) != len(set(values)):
+            return False
         return True
 
 if __name__ == '__main__':

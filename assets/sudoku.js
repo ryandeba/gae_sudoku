@@ -1,279 +1,289 @@
 $(function(){
 
-    var Cell = Backbone.Model.extend({
-        defaults: {
-            value: "",
-            isSelected: false
-        }
-    });
+	var Cell = Backbone.Model.extend({
+		defaults: {
+			value: "",
+			isSelected: false
+		},
 
-    var CellView = Backbone.View.extend({
-        tagName: "div",
+		initialize: function(){
+			var self = this;
+			self.listenTo(self, "set:value", self.validateValue);
+		},
 
-        template:  _.template($("#cellTemplate").html()),
+		validateValue: function(){
+			var self = this;
+			if (self.get("value") == "" || "123456789".indexOf(self.get("value")) == -1){
+				self.set("value", "")
+			}
+		}
+	});
 
-        attributes: {
-            "class" : "sudoku-cell"
-        },
+	var CellView = Backbone.View.extend({
+		tagName: "div",
 
-        events: {
-            "click": "clickListener"
-        },
+		template:  _.template($("#cellTemplate").html()),
 
-        initialize: function(){
-            this.listenTo(this.model, "change", this.render);
-            this.listenTo(this.model, "change:value", this.valueChanged);
-        },
+		attributes: {
+			"class" : "sudoku-cell"
+		},
 
-        clickListener: function(){
-            this.model.trigger("click", this.model);
-        },
+		events: {
+			"click": "clickListener"
+		},
 
-        valueChanged: function(){
-            var self = this;
-            setTimeout(function(){
-                self.flippyFlippy();
-            }, 1);
-        },
+		initialize: function(){
+			this.listenTo(this.model, "change", this.render);
+			this.listenTo(this.model, "change:value", this.valueChanged);
+		},
 
-        render: function(){
-            this.$el.html(this.template(this.model.toJSON()));
+		clickListener: function(){
+			this.model.trigger("click", this.model);
+		},
 
-            if (this.model.collection.length == 81
-                && [3,4,5,12,13,14,21,22,23,27,28,29,33,34,35,36,37,38,42,43,44,45,46,47,51,52,53,57,58,59,66,67,68,75,76,77]
-                    .indexOf(this.model.collection.indexOf(this.model)) > -1){
-                this.$el.addClass('sudoku-group-cell-2');
-            }
+		valueChanged: function(){
+			var self = this;
+			setTimeout(function(){
+				self.flippyFlippy();
+			}, 1);
+		},
 
-            if (this.model.get("isSelected")){
-                this.$el.addClass("is-selected");
-            } else {
-                this.$el.removeClass("is-selected");
-            }
+		render: function(){
+			this.$el.html(this.template(this.model.toJSON()));
 
-            //TODO: you did this while drunk. please fix
-            if (this.model.get("value").length > 1){
-                this.$el.addClass("sudoku-cell-4");
-            }
-            if (this.model.get("value") == "Solve"){
-                this.$el.addClass("js-solve-button");
-            }
-            if (this.model.get("value") == "Clear"){
-                this.$el.addClass("js-clear-button");
-            }
+			if (this.model.collection.length == 81
+				&& [3,4,5,12,13,14,21,22,23,27,28,29,33,34,35,36,37,38,42,43,44,45,46,47,51,52,53,57,58,59,66,67,68,75,76,77]
+					.indexOf(this.model.collection.indexOf(this.model)) > -1){
+				this.$el.addClass('sudoku-group-cell-2');
+			}
 
-            return this;
-        },
+			if (this.model.get("isSelected")){
+				this.$el.addClass("is-selected");
+			} else {
+				this.$el.removeClass("is-selected");
+			}
 
-        //TODO: also did this drunk
-        flippyFlippy: function(){
-            var self = this;
-            self.$el.addClass("animated flipInY");
-            setTimeout(function(){
-                self.$el.removeClass("animated flipInY");
-            }, 1000);
-        }
-    });
+			//TODO: you did this while drunk. please fix
+			if (this.model.get("value").length > 1){
+				this.$el.addClass("sudoku-cell-4");
+			}
+			if (this.model.get("value") == "Solve"){
+				this.$el.addClass("js-solve-button");
+			}
+			if (this.model.get("value") == "Clear"){
+				this.$el.addClass("js-clear-button");
+			}
 
-    var Cells = Backbone.Collection.extend({
-        model: Cell,
+			return this;
+		},
 
-        initialize: function(){
-            var self = this;
-            for (var i = 0; i < 81; i++){
-                self.add({});
-            }
+		//TODO: also did this drunk
+		flippyFlippy: function(){
+			var self = this;
+			self.$el.addClass("animated flipInY");
+			setTimeout(function(){
+				self.$el.removeClass("animated flipInY");
+			}, 1000);
+		}
+	});
 
-            self.listenTo(self, "change:isSelected", self.changeIsSelectedListener);
-        },
+	var Cells = Backbone.Collection.extend({
+		model: Cell,
 
-        changeIsSelectedListener: function(changedCell){
-            var self = this;
-            if (changedCell.get("isSelected")){
-                self.each(function(cell){
-                    if (cell != changedCell){
-                        cell.set("isSelected", false);
-                    }
-                });
-            }
-        }
-    });
+		initialize: function(){
+			var self = this;
+			for (var i = 0; i < 81; i++){
+				self.add({});
+			}
 
-    var App = Backbone.View.extend({
+			self.listenTo(self, "change:isSelected", self.changeIsSelectedListener);
+		},
 
-        events: {
-            "keypress": "keypressListener",
-            "click .js-solve-button": "solveBoard",
-            "click .js-clear-button": "clearBoard"
-        },
+		changeIsSelectedListener: function(changedCell){
+			var self = this;
+			if (changedCell.get("isSelected")){
+				self.each(function(cell){
+					if (cell != changedCell){
+						cell.set("isSelected", false);
+					}
+				});
+			}
+		}
+	});
 
-        initialize: function(){
-            var self = this;
+	var App = Backbone.View.extend({
 
-            self.cells = new Cells();
-            self.cells.at(0).set("isSelected", true);
-            self.listenTo(self.cells, "click", self.cellClicked);
-            
-            var controlsJSON = [];
-            for (var i = 1; i < 10; i++){
-                controlsJSON.push({'value': i.toString()});
-                if (i == 5) {
-                    controlsJSON.push({'value': 'Solve'});
-                }
-                if (i == 9) {
-                    controlsJSON.push({'value': 'C'});
-                    controlsJSON.push({'value': 'Clear'});
-                }
-            }
-            self.controls = new Cells(controlsJSON);
-            self.listenTo(self.controls, "click", self.controlClicked);
-        },
+		events: {
+			"keypress": "keypressListener",
+			"click .js-solve-button": "solveBoard",
+			"click .js-clear-button": "clearBoard"
+		},
 
-        clearBoard: function(){
-            var self = this;
-            self.cells.each(function(cell){
-                cell.set("value", "");
-            });
-            self.cells.at(0).set("isSelected", true);
-        },
+		initialize: function(){
+			var self = this;
 
-        keypressListener: function(eventData){
-            var self = this;
-            self.setSelectedCellToValue(self.convertKeyCodeToSudokuValue(eventData.keyCode));
-        },
+			self.cells = new Cells();
+			self.cells.at(0).set("isSelected", true);
+			self.listenTo(self.cells, "click", self.cellClicked);
+			
+			var controlsJSON = [];
+			for (var i = 1; i < 10; i++){
+				controlsJSON.push({'value': i.toString()});
+				if (i == 5) {
+					controlsJSON.push({'value': 'Solve'});
+				}
+				if (i == 9) {
+					controlsJSON.push({'value': 'C'});
+					controlsJSON.push({'value': 'Clear'});
+				}
+			}
+			self.controls = new Cells(controlsJSON);
+			self.listenTo(self.controls, "click", self.controlClicked);
+		},
 
-        convertKeyCodeToSudokuValue: function(keyCode){
-            switch (keyCode){
-                case 49:
-                    return "1";
-                case 50:
-                    return "2";
-                case 51:
-                    return "3";
-                case 52:
-                    return "4";
-                case 53:
-                    return "5";
-                case 54:
-                    return "6";
-                case 55:
-                    return "7";
-                case 56:
-                    return "8";
-                case 57:
-                    return "9";
-                default:
-                    return "";
-            }
-        },
+		clearBoard: function(){
+			var self = this;
+			self.cells.each(function(cell){
+				cell.set("value", "");
+			});
+			self.cells.at(0).set("isSelected", true);
+		},
 
-        controlClicked: function(control){
-            var self = this;
-            if ("123456789C".indexOf(control.get("value")) > -1){
-                self.setSelectedCellToValue(control.get("value"));
-            }
-        },
+		keypressListener: function(eventData){
+			var self = this;
+			self.setSelectedCellToValue(self.convertKeyCodeToSudokuValue(eventData.keyCode));
+		},
 
-        setSelectedCellToValue: function(value){
-            var self = this;
-            value = "123456789".indexOf(value) > -1 ? value : "";
-            self.cells.findWhere({"isSelected" : true}).set("value", value);
-            self.selectNextCell();
-        },
+		convertKeyCodeToSudokuValue: function(keyCode){
+			switch (keyCode){
+				case 49:
+					return "1";
+				case 50:
+					return "2";
+				case 51:
+					return "3";
+				case 52:
+					return "4";
+				case 53:
+					return "5";
+				case 54:
+					return "6";
+				case 55:
+					return "7";
+				case 56:
+					return "8";
+				case 57:
+					return "9";
+				default:
+					return "";
+			}
+		},
 
-        selectNextCell: function(){
-            var self = this;
-            var indexOfCurrentSelectedCell = self.cells.indexOf(self.cells.findWhere({"isSelected" : true}));
-            var nextCell = indexOfCurrentSelectedCell < 80 ? indexOfCurrentSelectedCell + 1 : 0;
-            self.cells.at(nextCell).set("isSelected", true);
-        },
+		controlClicked: function(control){
+			var self = this;
+			if ("123456789C".indexOf(control.get("value")) > -1){
+				self.setSelectedCellToValue(control.get("value"));
+			}
+		},
 
-        cellClicked: function(cell){
-            cell.set("isSelected", true);
-        },
+		setSelectedCellToValue: function(value){
+			var self = this;
+			value = "123456789".indexOf(value) > -1 ? value : "";
+			self.cells.findWhere({"isSelected" : true}).set("value", value);
+			self.selectNextCell();
+		},
 
-        solveBoard: function(){
-            var self = this;
+		selectNextCell: function(){
+			var self = this;
+			var indexOfCurrentSelectedCell = self.cells.indexOf(self.cells.findWhere({"isSelected" : true}));
+			var nextCell = indexOfCurrentSelectedCell < 80 ? indexOfCurrentSelectedCell + 1 : 0;
+			self.cells.at(nextCell).set("isSelected", true);
+		},
 
-            var board = "";
+		cellClicked: function(cell){
+			cell.set("isSelected", true);
+		},
 
-            self.cells.each(function(cell){
-                board += cell.get("value").length == 1 ? cell.get("value") : "0";
-            });
+		solveBoard: function(){
+			var self = this;
 
-            self.$el.find("#message").html("Solving...");
+			var board = "";
 
-            $.ajax({
-                url: "/solveBoard?board=" + board,
-                success: function(data){ self.receiveSolutions(data); }
-            });
-        },
+			self.cells.each(function(cell){
+				board += cell.get("value").length == 1 ? cell.get("value") : "0";
+			});
 
-        receiveSolutions: function(data){
-            var self = this;
-            self.$el.find("#message").html("");
-            if (data[0].length == 0){
-                self.$el.find("#message").html("No possible solution");
-            }
-            for (var i = 0; i < data[0].length; i++){
-                (function(x){
-                    setTimeout(function(){
-                        self.cells.at(x).set("value", data[0].charAt(x));
-                    }, x * 30);
-                }(i));
-            }
-        },
+			self.$el.find("#message").html("Solving...");
 
-        render: function(){
-            this.renderBoard();
-            this.renderControls();
-            return this;
-        },
+			$.ajax({
+				url: "/solveBoard?board=" + board,
+				success: function(data){ self.receiveSolutions(data); }
+			});
+		},
 
-        renderBoard: function(){
-            var self = this;
-            var $board = self.$el.find("#board");
-            $board.html("");
-            self.cells.each(function(cell, iterator){
-                if (iterator % 9 == 0) {
-                    $board.append("<div class='sudoku-row'></div>");
-                }
-                var cellView = new CellView({model: cell});
-                $board.find(".sudoku-row").last().append(cellView.render().$el);
-            });
-        },
+		receiveSolutions: function(data){
+			var self = this;
+			self.$el.find("#message").html("");
+			if (data[0].length == 0){
+				self.$el.find("#message").html("No possible solution");
+			}
+			for (var i = 0; i < data[0].length; i++){
+				(function(x){
+					setTimeout(function(){
+						self.cells.at(x).set("value", data[0].charAt(x));
+					}, x * 30);
+				}(i));
+			}
+		},
 
-        renderControls: function(){
-            var self = this;
-            var $controls = self.$el.find("#controls");
-            $controls.html("");
-            self.controls.each(function(cell, iterator){
-                if (iterator % 6 == 0){
-                    $controls.append("<div class='sudoku-row'></div>");
-                }
-                var cellView = new CellView({model: cell});
-                $controls.find(".sudoku-row").last().append(cellView.render().$el);
-            });
-        }
-    });
+		render: function(){
+			this.renderBoard();
+			this.renderControls();
+			return this;
+		},
 
-    new App({
-        el: "#sudoku"
-    }).render();
+		renderBoard: function(){
+			var self = this;
+			var $board = self.$el.find("#board");
+			$board.html("");
+			self.cells.each(function(cell, iterator){
+				if (iterator % 9 == 0) {
+					$board.append("<div class='sudoku-row'></div>");
+				}
+				var cellView = new CellView({model: cell});
+				$board.find(".sudoku-row").last().append(cellView.render().$el);
+			});
+		},
 
+		renderControls: function(){
+			var self = this;
+			var $controls = self.$el.find("#controls");
+			$controls.html("");
+			self.controls.each(function(cell, iterator){
+				if (iterator % 6 == 0){
+					$controls.append("<div class='sudoku-row'></div>");
+				}
+				var cellView = new CellView({model: cell});
+				$controls.find(".sudoku-row").last().append(cellView.render().$el);
+			});
+		}
+	});
 
-    var resizeElements = function(){
-        var sudokuCellSize = ($(window).width() - 10 - (5 * 8)) / 9;
-        if ($(window).height() < $(window).width() * 1.25) {
-            sudokuCellSize = ($(window).height() - 10) / 12.5;
-        }
-        less.modifyVars({
-            '@sudoku-cell-size' : sudokuCellSize + 'px'
-        });
-    };
-    resizeElements();
-    $(window).on("resize", function(){
-        resizeElements();
-    });
+	new App({
+		el: "body"
+	}).render();
+
+	var resizeElements = function(){
+		var sudokuCellSize = ($(window).width() - 30 - (5 * 8)) / 9;
+		if ($(window).height() < $(window).width() * 1.25) {
+			sudokuCellSize = ($(window).height() - 10) / 12.5;
+		}
+		less.modifyVars({
+			'@sudoku-cell-size' : sudokuCellSize + 'px'
+		});
+	};
+	resizeElements();
+	$(window).on("resize", function(){
+		resizeElements();
+	});
 });
-

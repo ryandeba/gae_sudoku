@@ -1,26 +1,54 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Sudoku Solver</title>
-        <link rel="icon" type="image/ico" href="/assets/favicon.ico"/>
-        <link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
-        <link href="/assets/styles.css" rel="stylesheet/less" type="text/css">
-        <link href="/assets/animate.min.css" rel="stylesheet" type="text/css">
-        <script src="/assets/jquery.js"></script>
-        <script src="/assets/underscore.js"></script>
-        <script src="/assets/backbone.js"></script>
-        <script src="/assets/sudoku.js"></script>
-        <script src="/assets/less.js"></script>
-        <meta id="viewport" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
-    </head>
-    <body id="sudoku">
-        <script type="text/template" id="cellTemplate">
-            <%= value %>
-        </script>
+	<head>
+		<title>Sudoku Solver</title>
+		<link rel="icon" type="image/ico" href="/assets/favicon.ico"/>
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans:400,700' rel='stylesheet' type='text/css'>
+		<link href="/assets/styles.css" rel="stylesheet/less" type="text/css">
+		<link href="/assets/jquery.mobile.css" rel="stylesheet" type="text/css">
+		<link href="/assets/animate.min.css" rel="stylesheet" type="text/css">
+		<script src="/assets/jquery.js"></script>
+		<script src="/assets/underscore.js"></script>
+		<script src="/assets/backbone.js"></script>
+		<script src="/assets/sudoku.js"></script>
+		<script src="/assets/less.js"></script>
+		<script src="/assets/jquery.mobile.js"></script>
+		<meta id="viewport" name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no" />
+	</head>
+	<body id="sudoku">
+		<script type="text/template" id="cellTemplate">
+			<%= value %>
+		</script>
+		<div data-role="page">
+			<div data-role="panel" data-position="right" data-display="overlay" id="optionsPanel">
 
-        <div id="board"></div>
-        <hr>
-        <div id="controls"></div>
-        <span id="message" style="clear:both; float:left;"></span>
-    </body>
+				<fieldset data-role="controlgroup" data-iconpos="right">
+					<legend>Game Mode:</legend>
+					<input type="radio" name="gameMode" id="gameMode_play" value="on" checked="checked">
+					<label for="gameMode_play">Play</label>
+					<input type="radio" name="gameMode" id="gameMode_solve" value="off">
+					<label for="gameMode_solve">Solve</label>
+				</fieldset>
+
+				<div data-role="controlgroup">
+					<legend>Options:</legend>
+					<a href="#" data-role="button">Clear Board</a>
+					<a href="#" data-role="button">Solve Board</a>
+				</div>
+
+			</div>
+			<div data-role="header">
+				<h1>Sudoku</h1>
+				<a href="#optionsPanel" data-icon="gear" class="ui-btn-right">Options</a>
+			</div>
+
+			<div data-role="content">
+
+				<div id="board" class="sudoku-board"></div>
+				<div id="controls"></div>
+				<span id="message" style="clear:both; float:left;"></span>
+
+			</div>
+		</div>
+	</body>
 </html>

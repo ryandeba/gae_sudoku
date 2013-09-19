@@ -1,53 +1,87 @@
 * {
-    box-sizing: border-box;
+box-sizing: border-box;
 }
 
 ::selection {
-    color: black;
+color: black;
 }
 
 @sudoku-cell-size: 1px;
 
+@color1: #A4C639;
+@color2: #EAEAEA;
+@color3: #86A3A4;
+@color4: #33B5E5;
+@color5: #333333;
+
 body {
-    background-color: #B8AE9C;
-    font-family: 'Droid Sans', sans-serif;
-    margin: 5px;
+	background-color: @color2;
+	font-family: 'Droid Sans', sans-serif;
+	color: @color5;
+	margin: 0;
+}
+
+.l-padding-small {
+	padding: 5px;
+}
+
+.header {
+	background-color: darken(@color2, 15%);
+	font-size: 20px;
+	line-height: 2;
+	text-align: center;
+}
+
+.menu-toggle {
+	cursor: pointer;
+	position: absolute;
+	right: 20px;
+	top: 0;
+}
+
+.header-nav {
+
+}
+
+.sudoku-board {
+	border-bottom: 1px solid black;
+	margin-bottom: 5px
 }
 
 .sudoku-row {
-    clear: both;
-    padding-bottom: @sudoku-cell-size / 10;
-    overflow: auto;
-    width: 100%;
+	clear: both;
+	padding-bottom: @sudoku-cell-size / 10;
+	overflow: auto;
+	width: 100%;
 }
 
 .sudoku-cell {
-    background-color: #FFFFFF;
-    box-shadow: 1px 1px 4px #595241;
-    cursor: pointer;
-    display: block;
-    font-size: @sudoku-cell-size * (5 / 6);
-    float: left;
-    height: @sudoku-cell-size;
-    overflow: hidden;
-    text-align: center;
-    width: @sudoku-cell-size;
+	background-color: @color3;
+	box-shadow: 1px 1px 4px @color5;
+	cursor: pointer;
+	display: block;
+	font-size: @sudoku-cell-size * (5 / 6);
+	float: left;
+	height: @sudoku-cell-size;
+	overflow: hidden;
+	text-align: center;
+	width: @sudoku-cell-size;
 }
 
 .sudoku-cell-4 {
-    height: @sudoku-cell-size;
-    margin-left: @sudoku-cell-size / 10;
-    width: @sudoku-cell-size * 4 + 15px;
+	height: @sudoku-cell-size;
+	margin-left: @sudoku-cell-size / 10;
+	width: @sudoku-cell-size * 4 + 15px;
 }
 
 .sudoku-cell.is-selected {
-    background-color: yellow;
+	background-color: @color4;
 }
 
 .sudoku-cell + .sudoku-cell {
-    margin-left: 5px;
+	margin-left: 5px;
 }
 
 .sudoku-group-cell-2 {
-    background-color: #ACCFCC;
+	background-color: @color1;
 }

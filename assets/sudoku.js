@@ -38,7 +38,7 @@ $(function(){
 		},
 
 		clickListener: function(){
-			this.model.trigger("click", this.model);
+			this.model.trigger("selectCell", this.model);
 		},
 
 		valueChanged: function(){
@@ -106,8 +106,10 @@ $(function(){
 			"keypress": "keypressListener",
 			"click .js-solve-button": "solveBoard",
 			"click .js-clear-button": "clearBoard",
+			"click .js-new-button": "newPuzzle",
 			"click .js-gamemode-play-button": "clickGameModePlayButton",
-			"click .js-gamemode-solve-button": "clickGameModeSolveButton"
+			"click .js-gamemode-solve-button": "clickGameModeSolveButton",
+			"click .js-close-options-button": "closeOptions"
 		},
 
 		initialize: function(){
@@ -115,7 +117,7 @@ $(function(){
 
 			self.cells = new Cells();
 			self.cells.at(0).set("isSelected", true);
-			self.listenTo(self.cells, "click", self.cellClicked);
+			self.listenTo(self.cells, "selectCell", self.selectCell);
 			
 			var controlsJSON = [];
 			for (var i = 1; i < 10; i++){
@@ -125,12 +127,17 @@ $(function(){
 				}
 			}
 			self.controls = new Cells(controlsJSON);
-			self.listenTo(self.controls, "click", self.controlClicked);
+			self.listenTo(self.controls, "selectCell", self.controlClicked);
 
 			self.setGameMode("play");
 		},
 
 		setGameMode: function(mode){
+			var self = this;
+			if (self.gameMode == "play" && mode == "solve"){
+			}
+			else if (self.gameMode == "solve" && mode == "play"){
+			}
 			self.gameMode = mode;
 		},
 
@@ -140,6 +147,10 @@ $(function(){
 
 		clickGameModeSolveButton: function(){
 			this.setGameMode("solve");
+		},
+
+		closeOptions: function(){
+			this.$el.find("#optionsPanel").panel("close");
 		},
 
 		clearBoard: function(){
@@ -201,8 +212,24 @@ $(function(){
 			self.cells.at(nextCell).set("isSelected", true);
 		},
 
-		cellClicked: function(cell){
+		selectCell: function(cell){
 			cell.set("isSelected", true);
+		},
+
+		newPuzzle: function(){
+			var self = this;
+			$.ajax({
+				url: "/newPuzzle",
+				success: function(data){ self.receiveNewPuzzle(data); }
+			});
+		},
+
+		receiveNewPuzzle: function(data){
+			var self = this;
+			data = data[0].split("");
+			self.cells.each(function(cell, iterator){
+				cell.set("value", data[iterator]);
+			});
 		},
 
 		solveBoard: function(){

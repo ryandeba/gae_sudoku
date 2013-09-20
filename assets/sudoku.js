@@ -63,17 +63,6 @@ $(function(){
 				this.$el.removeClass("is-selected");
 			}
 
-			//TODO: you did this while drunk. please fix
-			if (this.model.get("value").length > 1){
-				this.$el.addClass("sudoku-cell-4");
-			}
-			if (this.model.get("value") == "Solve"){
-				this.$el.addClass("js-solve-button");
-			}
-			if (this.model.get("value") == "Clear"){
-				this.$el.addClass("js-clear-button");
-			}
-
 			return this;
 		},
 
@@ -116,7 +105,9 @@ $(function(){
 		events: {
 			"keypress": "keypressListener",
 			"click .js-solve-button": "solveBoard",
-			"click .js-clear-button": "clearBoard"
+			"click .js-clear-button": "clearBoard",
+			"click .js-gamemode-play-button": "clickGameModePlayButton",
+			"click .js-gamemode-solve-button": "clickGameModeSolveButton"
 		},
 
 		initialize: function(){
@@ -129,16 +120,26 @@ $(function(){
 			var controlsJSON = [];
 			for (var i = 1; i < 10; i++){
 				controlsJSON.push({'value': i.toString()});
-				if (i == 5) {
-					controlsJSON.push({'value': 'Solve'});
-				}
 				if (i == 9) {
-					controlsJSON.push({'value': 'C'});
-					controlsJSON.push({'value': 'Clear'});
+					controlsJSON.push({"value": "C"});
 				}
 			}
 			self.controls = new Cells(controlsJSON);
 			self.listenTo(self.controls, "click", self.controlClicked);
+
+			self.setGameMode("play");
+		},
+
+		setGameMode: function(mode){
+			self.gameMode = mode;
+		},
+
+		clickGameModePlayButton: function(){
+			this.setGameMode("play");
+		},
+
+		clickGameModeSolveButton: function(){
+			this.setGameMode("solve");
 		},
 
 		clearBoard: function(){
@@ -260,7 +261,7 @@ $(function(){
 			var $controls = self.$el.find("#controls");
 			$controls.html("");
 			self.controls.each(function(cell, iterator){
-				if (iterator % 6 == 0){
+				if (iterator % 9 == 0){
 					$controls.append("<div class='sudoku-row'></div>");
 				}
 				var cellView = new CellView({model: cell});

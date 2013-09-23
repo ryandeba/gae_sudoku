@@ -58,6 +58,7 @@ body {
 .sudoku-cell {
 	background-color: @color3;
 	box-shadow: 1px 1px 4px @color5;
+	color: @color2;
 	cursor: pointer;
 	display: block;
 	font-size: @sudoku-cell-size * (5 / 6);
@@ -66,6 +67,11 @@ body {
 	overflow: hidden;
 	text-align: center;
 	width: @sudoku-cell-size;
+}
+
+.sudoku-cell-locked {
+	cursor: default;
+	color: @color5;
 }
 
 .sudoku-cell-4 {

@@ -3,7 +3,8 @@ $(function(){
 	var Cell = Backbone.Model.extend({
 		defaults: {
 			value: "",
-			isSelected: false
+			isSelected: false,
+			isSelectable: true
 		},
 
 		initialize: function(){
@@ -57,6 +58,12 @@ $(function(){
 				this.$el.addClass('sudoku-group-cell-2');
 			}
 
+			if (this.model.get("isSelectable")){
+				this.$el.removeClass("sudoku-cell-locked");
+			} else {
+				this.$el.addClass("sudoku-cell-locked");
+			}
+
 			if (this.model.get("isSelected")){
 				this.$el.addClass("is-selected");
 			} else {
@@ -66,7 +73,6 @@ $(function(){
 			return this;
 		},
 
-		//TODO: also did this drunk
 		flippyFlippy: function(){
 			var self = this;
 			self.$el.addClass("animated flipInY");
@@ -202,7 +208,7 @@ $(function(){
 			var self = this;
 			value = "123456789".indexOf(value) > -1 ? value : "";
 			self.cells.findWhere({"isSelected" : true}).set("value", value);
-			self.selectNextCell();
+			//self.selectNextCell();
 		},
 
 		selectNextCell: function(){
@@ -213,7 +219,9 @@ $(function(){
 		},
 
 		selectCell: function(cell){
-			cell.set("isSelected", true);
+			if (cell.get("isSelectable")){
+				cell.set("isSelected", true);
+			}
 		},
 
 		newPuzzle: function(){
@@ -228,8 +236,28 @@ $(function(){
 			var self = this;
 			data = data[0].split("");
 			self.cells.each(function(cell, iterator){
-				cell.set("value", data[iterator]);
+				cell.set("actualValue", data[iterator]);
+				cell.set("value", "");
+				cell.set("isSelectable", true);
 			});
+			self.fillRandomCells();
+			self.selectFirstSelectableCell();
+		},
+
+		fillRandomCells: function(){
+			var self = this;
+			for (var i = 0; i < 40; i++){
+				var cellPool = self.cells.where({"value" : ""});
+				var cell = _.sample(cellPool);
+				cell.set("value", cell.get("actualValue"));
+				cell.set("isSelectable", false);
+			}
+		},
+
+		selectFirstSelectableCell: function(){
+			var self = this;
+			var cell = self.cells.findWhere({isSelectable: true});
+			self.selectCell(cell);
 		},
 
 		solveBoard: function(){
